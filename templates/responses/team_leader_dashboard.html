@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'dashboard' %}">Team Leader Dashboard</a>
+            <div class="navbar-nav ms-auto">
+                <span class="nav-item nav-link">Team Leader ID: {{ agent_id }}</span>
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Response Data</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Agent ID</th>
+                            <th>Patient Name</th>
+                            <th>Provider</th>
+                            <th>Medicare ID</th>
+                            <th>Date of Birth</th>
+                            <th>SNS Result</th>
+                            <th>Requested Device</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for response in responses %}
+                        <tr>
+                            <td>{{ response.agent_id }}</td>
+                            <td>{{ response.pt_full_name }}</td>
+                            <td>{{ response.provider }}</td>
+                            <td>{{ response.medicare_id }}</td>
+                            <td>{{ response.date_of_birth }}</td>
+                            <td>{{ response.sns_result }}</td>
+                            <td>{{ response.requested_device }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info" onclick="viewDetails('{{ response.id }}')">View Details</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewDetails(responseId) {
+    // Implement view details functionality
+    console.log('Viewing details for response:', responseId);
+}
+</script>
+{% endblock %}

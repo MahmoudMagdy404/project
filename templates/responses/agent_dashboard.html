@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'dashboard' %}">Agent Dashboard</a>
+            <div class="navbar-nav ms-auto">
+                <span class="nav-item nav-link">Agent ID: {{ agent_id }}</span>
+                <a class="nav-link" href="{% url 'submit_response' %}">Submit Response</a>
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Welcome, Agent!</h5>
+                    <p class="card-text">Click "Submit Response" to enter new patient data.</p>
+                    <a href="{% url 'submit_response' %}" class="btn btn-primary">Submit New Response</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

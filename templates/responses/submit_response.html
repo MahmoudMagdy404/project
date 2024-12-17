@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'dashboard' %}">CRM Dashboard</a>
+            <div class="navbar-nav ms-auto">
+                <span class="nav-item nav-link">Agent ID: {{ agent_id }}</span>
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Card Container -->
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title mb-4">Submit Response</h2>
+
+            <!-- Form -->
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Team Leader & SNS Result -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Team Leader</label>
+                        <input type="text" name="team_leader" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">SNS Result</label>
+                        <input type="text" name="sns_result" class="form-control" required>
+                    </div>
+                </div>
+
+                <!-- Requested Device & Provider -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Requested Device</label>
+                        <input type="text" name="requested_device" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Provider</label>
+                        <input type="text" name="provider" class="form-control" required>
+                    </div>
+                </div>
+
+                <!-- Patient Information -->
+                <h4 class="mt-4 mb-3">Patient Information</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="pt_full_name" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" name="pt_phone_number" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Medicare ID</label>
+                        <input type="text" name="medicare_id" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" name="date_of_birth" class="form-control" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Plan</label>
+                        <input type="text" name="plan" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Full Address</label>
+                    <textarea name="pt_full_address" class="form-control" rows="2" required></textarea>
+                </div>
+
+                <!-- Physical Characteristics -->
+                <h4 class="mt-4 mb-3">Physical Characteristics</h4>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Height</label>
+                        <input type="text" name="height" class="form-control" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Weight</label>
+                        <input type="text" name="weight" class="form-control" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Waist Size</label>
+                        <input type="text" name="waist_size" class="form-control" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Shoe Size</label>
+                        <input type="text" name="shoe_size" class="form-control" required>
+                    </div>
+                </div>
+
+                <!-- Medical Questions -->
+                <h4 class="mt-4 mb-3">Medical Questions</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="primary_doctor_aware" id="primary_doctor_aware">
+                            <label class="form-check-label" for="primary_doctor_aware">
+                                Does your primary doctor know about your pain?
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Last doctor visit date</label>
+                        <input type="date" name="last_seen_doctor" class="form-control">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="diabetic" id="diabetic">
+                            <label class="form-check-label" for="diabetic">
+                                Are you diabetic?
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="relatives_with_cancer" id="relatives_with_cancer">
+                            <label class="form-check-label" for="relatives_with_cancer">
+                                Family history of cancer?
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit and Cancel Buttons -->
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Submit Response</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary ms-2">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
