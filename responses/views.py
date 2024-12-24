@@ -54,29 +54,29 @@ def add_user_view(request):
 
     return render(request, 'responses/add_user.html', {'form': form})
 def login_view(request):
-    """Handle agent login"""
+    """Handle agent login."""
     if request.method == 'POST':
-        agent_id = request.POST.get('agent_id', '').strip()
+        name = request.POST.get('name', '').strip()  # Use name instead of agent_id
         password = request.POST.get('password', '').strip()
-        
-        print(f"Login attempt: Agent ID = '{agent_id}', Password = '{password}'")  # Debugging
-        
+
         try:
-            is_authenticated, role = authenticate_agent(agent_id, password)
-            print(f"Authentication result: {is_authenticated}, Role: {role}")
-            
+            is_authenticated, role, agent_id = authenticate_agent(name, password)
+            print(f"Authentication result: is_authenticated={is_authenticated}, role={role}, id={agent_id}")  # Debugging
+
             if is_authenticated:
-                request.session['agent_id'] = agent_id
+                # Store role, name, and agent_id in the session
+                request.session['agent_name'] = name
                 request.session['role'] = role
-                print(f"Session created: agent_id = {request.session['agent_id']}, role = {request.session['role']}")
-                return redirect('dashboard')  # Redirect to dashboard
+                request.session['agent_id'] = agent_id  # Add agent's ID to the session
+                return redirect('dashboard')
             else:
                 messages.error(request, 'Invalid credentials')
         except Exception as e:
             messages.error(request, 'Login failed. Please try again.')
             print(f"Login error: {e}")
-    
+
     return render(request, 'responses/login.html')
+
 
 
 
@@ -88,27 +88,31 @@ def logout_view(request):
 @login_required
 def dashboard_view(request):
     role = request.session.get('role')
-    agent_id = request.session.get('agent_id')
-    agent_name = request.session.get("agent_name")
-    print(f"Accessing Dashboard: Agent ID = {agent_id}, Role = {role}")
+    agent_name = request.session.get('agent_name')  # Fetch agent's name from the session
+    agent_id = request.session.get('agent_id')  # Fetch agent's ID
+
+    print(f"Accessing Dashboard: Agent Name = {agent_name}, Agent ID = {agent_id}, Role = {role}")
 
     if role == 'TL':
         responses = get_all_responses()
         return render(request, 'responses/team_leader_dashboard.html', {
+            'agent_name': agent_name,
             'agent_id': agent_id,
             'responses': responses
         })
     else:
         return render(request, 'responses/agent_dashboard.html', {
+            'agent_name': agent_name,
             'agent_id': agent_id
         })
+
 
 
 @login_required
 def submit_response(request):
     """Handle response submission"""
     agent_id = request.session.get('agent_id')
-    agent_name = request.session.get("agent_name")
+    agent_name = request.session.get("name")
 
     if request.method == 'POST':
         try:

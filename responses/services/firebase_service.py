@@ -59,11 +59,12 @@ def get_last_agent_id():
     """Fetch the highest agent ID from the agents collection."""
     try:
         agents = db.collection('agents').stream()
-        ids = [int(doc.id.split('_')[-1]) for doc in agents if doc.id.split('_')[-1].isdigit()]
+        ids = [doc.to_dict().get('id', 0) for doc in agents]  # Get 'id' field
         return max(ids) if ids else 0
     except Exception as e:
         print(f"Error fetching last agent ID: {e}")
         return 0
+
 
 def generate_random_password(length=8):
     """Generate a random unique password."""
@@ -74,19 +75,19 @@ def generate_new_user(name, role):
     """Generate a new user with a unique ID and random password."""
     try:
         last_id = get_last_agent_id()
-        new_id = last_id + 1
-        agent_id = f"agent_{new_id}"
+        new_id = last_id + 1  # Increment the last ID
         password = generate_random_password()
 
-        # Add user to Firestore
-        db.collection('agents').document(agent_id).set({
-            'name': name,
-            'role': role,
-            'password': password
+        # Add user to Firestore using 'name' as document ID
+        db.collection('agents').document(name).set({
+            'id': new_id,  # Store the ID as a field
+            'password': password,
+            'role': role
         })
 
-        return agent_id, password
+        return new_id, password
     except Exception as e:
         print(f"Error generating new user: {e}")
         raise
+
 
