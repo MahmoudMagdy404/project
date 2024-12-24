@@ -2,16 +2,112 @@
 
 {% block content %}
 <div class="container mt-4">
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'dashboard' %}">Team Leader Dashboard</a>
             <div class="navbar-nav ms-auto">
                 <span class="nav-item nav-link">Team Leader ID: {{ agent_id }}</span>
+
+                <!-- Generate User Button -->
+                <button class="btn btn-success btn-sm me-2" id="generateUserBtn">
+                    Generate User
+                </button>
+
+                <!-- Logout Link -->
                 <a class="nav-link" href="{% url 'logout' %}">Logout</a>
             </div>
         </div>
     </nav>
 
+<!-- Generate User Button -->
+<button class="btn btn-success btn-sm me-2" id="generateUserBtn">Generate User</button>
+
+<!-- Pop-up Form -->
+<div id="generateUserModal" style="display: none;">
+    <div class="card mt-3 p-4">
+        <h4>Generate New User</h4>
+        <form id="generateUserForm">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Name" required>
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Select Role</label>
+                <select id="role" name="role" class="form-select">
+                    <option value="agent">Agent</option>
+                    <option value="TL">Team Leader</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-success" onclick="generateUser()">Generate</button>
+        </form>
+
+        <!-- Display Generated User -->
+        <div id="generatedUser" class="mt-4" style="display: none;">
+            <h5>Generated Credentials</h5>
+            <p><strong>Agent ID:</strong> <span id="generatedAgentID"></span></p>
+            <p><strong>Password:</strong> <span id="generatedPassword"></span></p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById("generateUserBtn").addEventListener("click", function () {
+    document.getElementById("generateUserModal").style.display = "block";
+});
+
+function generateUser() {
+    const name = document.getElementById("name").value.trim();
+    const role = document.getElementById("role").value.trim();
+
+    // Validate input
+    if (!name || !role) {
+        alert("Name and Role are required!");
+        return;
+    }
+
+    // Debugging: Log form data
+    console.log(`Submitting data: name=${name}, role=${role}`);
+
+    // Prepare form data
+    const formData = new URLSearchParams();
+    formData.append("name", name);
+    formData.append("role", role);
+
+    fetch("{% url 'generate_user' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.error) {
+            alert(`Error: ${data.error}`);
+        } else {
+            console.log("User generated successfully:", data);
+            document.getElementById("generatedUser").style.display = "block";
+            document.getElementById("generatedAgentID").innerText = data.agent_id;
+            document.getElementById("generatedPassword").innerText = data.password;
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An unexpected error occurred. Check the console for details.");
+    });
+}
+
+
+</script>
+
+    <!-- Main Card Section -->
     <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-title">Response Data</h5>
@@ -19,7 +115,7 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Agent ID</th>
+                            <th>Agent Name</th>
                             <th>Patient Name</th>
                             <th>Provider</th>
                             <th>Medicare ID</th>
@@ -32,7 +128,7 @@
                     <tbody>
                         {% for response in responses %}
                         <tr>
-                            <td>{{ response.agent_id }}</td>
+                            <td>{{ response.agent_name }}</td>
                             <td>{{ response.pt_full_name }}</td>
                             <td>{{ response.provider }}</td>
                             <td>{{ response.medicare_id }}</td>
@@ -51,7 +147,14 @@
     </div>
 </div>
 
+<!-- JavaScript -->
 <script>
+document.getElementById("generateUserBtn").addEventListener("click", function () {
+    // Show the modal when clicking Generate User
+    document.getElementById("generateUserModal").style.display = "block";
+});
+
+
 function viewDetails(responseId) {
     // Implement view details functionality
     console.log('Viewing details for response:', responseId);

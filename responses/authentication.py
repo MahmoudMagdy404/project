@@ -1,7 +1,7 @@
 from functools import wraps
 from django.shortcuts import redirect
 from django.contrib import messages
-from .firebase_utils import get_agent_by_id
+from .services.firebase_service import get_agent_by_id  # Correct import
 
 def authenticate_agent(agent_id, password):
     """Authenticate agent using Firebase"""

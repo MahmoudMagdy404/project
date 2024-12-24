@@ -2,20 +2,18 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from pathlib import Path
 
-def initialize_firebase():
-    """Initialize Firebase Admin SDK"""
-    cred = credentials.Certificate(Path(__file__).parent.parent / 'firebase_config.json')
-    if not firebase_admin._apps:
+# Path to Firebase credentials
+FIREBASE_CREDENTIALS = Path(__file__).resolve().parent.parent / 'firebase_config.json'
+
+# Initialize Firebase App
+if not firebase_admin._apps:
+    try:
+        cred = credentials.Certificate(str(FIREBASE_CREDENTIALS))
         firebase_admin.initialize_app(cred)
-    return firestore.client()
+        print("Firebase initialized successfully")
+    except Exception as e:
+        print(f"Error initializing Firebase: {e}")
+        raise
 
-def get_agent_by_id(agent_id):
-    """Retrieve agent data from Firestore"""
-    db = firestore.client()
-    agent_doc = db.collection('agents').document(agent_id).get()
-    return agent_doc.to_dict() if agent_doc.exists else None
-
-def save_response_data(data):
-    """Save response data to Firestore"""
-    db = firestore.client()
-    return db.collection('response_data').add(data)
+# Firestore DB instance
+db = firestore.client()
